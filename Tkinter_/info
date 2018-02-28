@@ -1,0 +1,115 @@
+Tkinter self study - following the book 'Tinker GUI application development blueprints' by 'Bhaskar Chaudhary' also found in this package
+
+------------
+Chapter One
+------------
+
+Importing tkinter:
+    "import tkinter as tk" > "from tkinter import *"
+    'import *' is usually seen as bad practice.
+
+The big picture:
+    1. Which components appear on the screen?
+    2. Where should these components go? (geometry management)
+    3. How do these components interact and behave?  (command/event binding using callback functions)
+
+    Components == Widgets (window gadgets) -> make up the app's frontend.
+
+The root window:
+    drawing the root window:
+        import tkinter as tk
+        root = tk.Tk() <- creates an instance of tk.Tk class, thus creating the root window. (called 'root' by convention)
+        root.mainloop()  <- keeps the window visible
+
+        note: you can open multiple instances of Tk at once
+
+The widgets:
+    Adding widgets:
+        my_widget = Widget-name(its container window, ** its configuration options)
+
+        example:
+            import tkinter as tk
+            root = tk.Tk()
+            label = Label(root, text="LabelText")  <- create an instance of the Label class
+            button = Button(root, text="ButtonText") <- create an instance of the Button class
+            label.pack()
+            button.pack()
+            root.mainloop()
+
+        To set widgets attributes, we can use the .config()/.configure() method
+        pack(): required to position the widgets within the window. See geometry management for more detailed information.
+
+        note:
+            1. we can combine 2 lines of code -
+                button = tk.Button(root).pack()
+            2. we can create widgets without saving a reference to them. They can't be accessed later on in the program.
+                tk.Button(root, text="no_ref").pack()
+            3. IMPORTANT: calls to pack() always return None, so code as shown below actually does not create a reference!
+                 my_label = tk.Label(root, text="labelText").pack()
+                 so if a reference to the widget is necessary, we CANNOT use Note. 1!
+
+    The core widgets:
+        (for a complete list you can find plenty of documentation online)
+
+    The geometry managers:
+        There are 3 geometry managers:
+            1. pack: simple for simple layouts.
+            2. grid: most commonly used, provides a table-like layout.
+            3. place: least commonly used, provides best control for absolute positioning of widgets.
+
+        The pack geometry manager:
+            most commonly used options:
+                1. side: (LEFT, TOP, RIGHT, BOTTOM)
+                2. fill: (X, Y, BOTH, NONE)
+                3. expand: (Boolean)
+                4. anchor: (NW, N, NE, E, SE, S, SW, W, CENTER)
+            most suited for:
+                1. Placing widgets in a top-down manner.
+                2. Placing widgets side by side.
+            for a complete .pack() reference: help(tkinter.Pack)
+
+        The grid geometry manager:
+            - organizes the container into a two-dimensional table, which is divided into a number of rows and columns.
+            - each cell of the table can then be targeted to hold a widget. (widgets can be made to span multiple cells)
+            - the 'sticky' option decides the positioning of a widget inside a cell.
+            - widget_name.grid.forget(): makes the specified widget invisible.
+            - widget_name.grid.remove(): removes the specified widget from the grid.
+            - w.columnconfigure() and w.rowconfigure()
+
+    Events and callback:
+        *** adding life to programs - making widgets functional ***
+        Command binding:
+            - Simplest way to add functionality to a button.
+            - A callback function is mentioned in the widget option. (only available for certain widgets)
+
+            - Passing arguments to callbacks:
+                Button(root,text="Click", command=lambda: my_callback ('some argument'))
+                !!! lambda lets you define a single-line, nameless function on the fly!!!
+
+            - Limitations: only reacts to left click or space bar
+                -> though very handy, not flexible enough :(
+
+        Event binding:
+            -.bind()
+            - widget.bind(event, handler, add=None)
+
+
+            # TODO pagina 25-32
+
+
+        Styling your widgets:
+            - fonts:
+                {font family} fontsize fontstyle
+                    - font family: complete font family long name (lowercase)
+                    - fontsize
+                    - a mix of normal/bold/italic and underline/overstrike
+            - wigetspecific styling has many disadvantages -> external option database = text file where you can specify
+                                                              common styling options.
+            - option+readfile('file_name')
+            - look online for more options
+
+------------
+Chapter Two
+------------
+
+
