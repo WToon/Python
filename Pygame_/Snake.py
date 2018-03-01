@@ -51,6 +51,10 @@ def main():
                 elif event.key == K_LEFT and x_velocity == 0:
                     x_velocity = -VEL
                     y_velocity = 0
+                elif event.key == K_r:
+                    x_velocity = y_velocity = 0
+                    snake = [(int(WINDOWWIDTH/2), int(WINDOWHEIGHT/2))]
+                    score = 0
 
 
         snake, apple, x_velocity, y_velocity = updateGameObjects(snake, apple, x_velocity, y_velocity, GROWTHSPEED)
