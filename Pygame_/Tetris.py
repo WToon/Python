@@ -28,7 +28,7 @@ BLOCKS = {'I': [(0, -1), (0, 0), (0, 1)],
 def main():
     init()
     score = 0
-    active_block = BLOCKS.get('T')
+    active_block = BLOCKS.get('J')
     block_center = (columnsize*4, columnsize*2)
     blocks = []
     while True:
