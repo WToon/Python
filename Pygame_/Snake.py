@@ -4,6 +4,7 @@ from pygame.locals import *
 # window variables
 WINDOWWIDTH = 800
 WINDOWHEIGHT = 800
+TILESIZE = int(WINDOWWIDTH/16)
 FPS = 60
 VEL = 6
 
@@ -124,7 +125,7 @@ def touchesTail(snake):
 
 def touchesApple(snake, apple):
     for limb in snake:
-        if (distance(limb, apple) < 13):
+        if (distance(limb, apple) < 10):
             return True
     return False
 
