@@ -2,10 +2,11 @@ import pygame, sys, random, numpy
 from pygame.locals import *
 
 # window variables
-WINDOWWIDTH = 400
-WINDOWHEIGHT = 400
+WINDOWWIDTH = 800
+WINDOWHEIGHT = 800
+TILESIZE = int(WINDOWWIDTH/16)
 FPS = 60
-VEL = 3
+VEL = 6
 
 # color definitions
 WHITE = (255, 255, 255)
@@ -28,7 +29,7 @@ def main():
     y_position = int(WINDOWHEIGHT/2)
     x_velocity = 0
     y_velocity = 0
-    GROWTHSPEED = 5
+    GROWTHSPEED = 50
     snake = [(x_position, y_position)]
     apple = (random.randint(10, WINDOWWIDTH), random.randint(10, WINDOWHEIGHT))
 
@@ -53,13 +54,14 @@ def main():
 
 
         snake, apple, x_velocity, y_velocity = updateGameObjects(snake, apple, x_velocity, y_velocity, GROWTHSPEED)
+        drawFloor()
         drawGameObjects(snake, apple)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
 
 def drawGameObjects(snake, apple):
-    DISPLAYSURF.fill(GREEN)
+#    DISPLAYSURF.fill(GREEN)
     drawSnake(snake)
     drawApple(apple)
 
@@ -85,16 +87,19 @@ def drawApple(apple):
 def updateGameObjects(snake, apple, xvel, yvel, GROWTHSPEED):
     snake = updateSnake(snake, xvel, yvel)
     if touchesTail(snake):
-        # TODO end game
         xvel = 0
         yvel = 0
-        print('Game over, final score: ' + str(len(snake)/GROWTHSPEED))
+        print('Game over, final score: ' + str(len(snake)) + ', ' + str(GROWTHSPEED))
         snake = [snake[0]]
     elif touchesApple(snake, apple):
         for i in range(1, GROWTHSPEED):
-            snake.append((snake[-1][0]-xvel*i, snake[-1][1]-yvel*i))
-        apple = (random.randint(10, WINDOWWIDTH), random.randint(10, WINDOWHEIGHT))
+            snake.append((-100, -100))
+        apple = (random.randint(10, WINDOWWIDTH-10), random.randint(10, WINDOWHEIGHT-10))
     return snake, apple, xvel, yvel
+
+
+def drawFloor():
+    DISPLAYSURF.fill(GREEN)
 
 
 def updateSnake(snake, xvel, yvel):
@@ -108,7 +113,7 @@ def updateSnake(snake, xvel, yvel):
 
 
 def touchesTail(snake):
-    for i in range(3, len(snake)-1):
+    for i in range(1, len(snake)-1):
         if (distance(snake[i], snake[0]) < 5):
             return True
     return False
