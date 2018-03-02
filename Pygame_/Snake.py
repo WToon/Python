@@ -2,10 +2,11 @@ import pygame, sys, random, numpy
 from pygame.locals import *
 
 # window variables
-WINDOWWIDTH = 400
-WINDOWHEIGHT = 400
+WINDOWWIDTH = 800
+WINDOWHEIGHT = 800
+TILESIZE = int(WINDOWWIDTH/16)
 FPS = 60
-VEL = 3
+VEL = 6
 
 # color definitions
 WHITE = (255, 255, 255)
@@ -28,8 +29,9 @@ def main():
     y_position = int(WINDOWHEIGHT/2)
     x_velocity = 0
     y_velocity = 0
+    GROWTHSPEED = 50
     snake = [(x_position, y_position)]
-    apples = [(random.randint(10, WINDOWWIDTH), random.randint(10, WINDOWHEIGHT))]
+    apple = (random.randint(10, WINDOWWIDTH), random.randint(10, WINDOWHEIGHT))
 
     while True:
         for event in pygame.event.get():
@@ -49,39 +51,59 @@ def main():
                 elif event.key == K_LEFT and x_velocity == 0:
                     x_velocity = -VEL
                     y_velocity = 0
+                elif event.key == K_r:
+                    x_velocity = y_velocity = 0
+                    snake = [(int(WINDOWWIDTH/2), int(WINDOWHEIGHT/2))]
+                    score = 0
 
 
-        snake, apples = updateGameObjects(snake, apples, x_velocity, y_velocity)
-        drawGameObjects(snake, apples)
+        snake, apple, x_velocity, y_velocity = updateGameObjects(snake, apple, x_velocity, y_velocity, GROWTHSPEED)
+        drawFloor()
+        drawGameObjects(snake, apple)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
 
-def drawGameObjects(snake, apples):
-    DISPLAYSURF.fill(GREEN)
+def drawGameObjects(snake, apple):
+#    DISPLAYSURF.fill(GREEN)
     drawSnake(snake)
-    drawApples(apples)
+    drawApple(apple)
 
 
 def drawSnake(snake):
+    i = 0
     for limb in snake:
-        pygame.draw.circle(DISPLAYSURF, DARK_GREEN, limb, 5)
+        if limb == snake[0]:
+            pygame.draw.circle(DISPLAYSURF, BLUE, limb, 7)
+        else:
+            if (i%2 == 0):
+                i+=1
+                pygame.draw.circle(DISPLAYSURF, DARK_GREEN, limb, 5)
+            else:
+                i+=1
+                pygame.draw.circle(DISPLAYSURF, WHITE, limb, 5)
 
 
-def drawApples(apples):
-    for apple in apples:
-        pygame.draw.circle(DISPLAYSURF, RED, apple, 10)
+def drawApple(apple):
+    pygame.draw.circle(DISPLAYSURF, RED, apple, 10)
 
 
-def updateGameObjects(snake, apples, xvel, yvel):
+def updateGameObjects(snake, apple, xvel, yvel, GROWTHSPEED):
     snake = updateSnake(snake, xvel, yvel)
     if touchesTail(snake):
-        gameOver()
-    if touchesApple(snake, apples[0]):
-        del(apples[0])
-        snake.append((snake[len(snake)-1][0]+numpy.sign(xvel)*3, snake[len(snake)-1][1]+numpy.sign(yvel)*3))
-        apples.append((random.randint(10, WINDOWWIDTH), random.randint(10, WINDOWHEIGHT)))
-    return snake, apples
+        xvel = 0
+        yvel = 0
+        print('Game over, final score: ' + str(len(snake)) + ', ' + str(GROWTHSPEED))
+        snake = [snake[0]]
+    elif touchesApple(snake, apple):
+        for i in range(1, GROWTHSPEED):
+            snake.append((-100, -100))
+        apple = (random.randint(10, WINDOWWIDTH-10), random.randint(10, WINDOWHEIGHT-10))
+    return snake, apple, xvel, yvel
+
+
+def drawFloor():
+    DISPLAYSURF.fill(GREEN)
 
 
 def updateSnake(snake, xvel, yvel):
@@ -95,11 +117,8 @@ def updateSnake(snake, xvel, yvel):
 
 
 def touchesTail(snake):
-    for limb in snake:
-        dist = distance(limb, snake[0])
-        if limb == snake[0]:
-            pass
-        elif (dist < 2):
+    for i in range(1, len(snake)-1):
+        if (distance(snake[i], snake[0]) < 5):
             return True
     return False
 
@@ -111,9 +130,9 @@ def touchesApple(snake, apple):
     return False
 
 
-def gameOver():
-    pygame.quit()
-    sys.exit()
+
+
+
 
 def distance(p0, p1):
     return numpy.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
