@@ -58,14 +58,13 @@ def update_ground_vertices(cur_x, cur_z):
     for vertex in ground_vertices:
         new_vertex = [vertex[0]+x_value_change, vertex[1], vertex[2]+z_value_change]
         uground_vertices.append(new_vertex)
-    print(uground_vertices)
     return uground_vertices
 
 
 def ground(cur_x, cur_z):
-    uground_vertices = update_ground_vertices(cur_x, cur_z)
+    updated_vertices = update_ground_vertices(cur_x, cur_z)
     glBegin(GL_QUADS)
-    for vertex in uground_vertices:
+    for vertex in updated_vertices:
         glColor3fv((0, 0.5, 0.1))
         glVertex3fv(vertex)
     glEnd()
@@ -87,38 +86,32 @@ def set_vertices(max_distance, min_distance=-20, camera_x=0):
 def cube(vertices_):
     glBegin(GL_QUADS)
     for surface in surfaces:
-        x=0
         for vertex in surface:
-            x+=1
-            glColor3fv((1, 0.3, 0))
+            glColor3fv((1, 0, 0))
             glVertex3fv(vertices_[vertex])
     glEnd()
 
 
 def main():
     pygame.init()
-    FPSCLOCK = pygame.time.Clock()
-    FPS = 30
+    f_p_s_clock = pygame.time.Clock()
+    f_p_s = 30
     display = (800, 600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+    pygame.display.set_caption('Space evaders')
 
     max_distance = 60
-    gamespeed = 0.2
+    game_speed = 0.2
 
     score = 0
 
     gluPerspective(90, display[0]/display[1], 0.1, max_distance)
     glTranslatef(0, 0, -40)
 
-    cur_x = 0
-    cur_y = 0
-    x_move = 0
-    y_move = 0
-
     cube_dict = dict()
 
-    for x in range(10):
-        cube_dict[x] = set_vertices(max_distance)
+    for i in range(10):
+        cube_dict[i] = set_vertices(max_distance)
 
     while True:
         for event in pygame.event.get():
@@ -127,21 +120,22 @@ def main():
                 quit()
         keys = pygame.key.get_pressed()
         if keys[K_LEFT]:
-            x_move = gamespeed
+            x_move = game_speed*2
         elif keys[K_RIGHT]:
-            x_move = -gamespeed
+            x_move = -game_speed*2
         else:
-            x_move = y_move = 0
-        x = glGetDoublev(GL_MODELVIEW_MATRIX)
+            x_move = 0
 
-        camera_x = x[3][0]
-        camera_z = x[3][2]
+        matrix = glGetDoublev(GL_MODELVIEW_MATRIX)
+
+        camera_x = matrix[3][0]
+        camera_z = matrix[3][2]
 
         cur_x = camera_x
 
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-        glTranslatef(x_move, y_move, gamespeed)
+        glTranslatef(x_move, 0, game_speed)
 
         ground(cur_x, camera_z)
 
@@ -156,7 +150,7 @@ def main():
 
         glTranslatef(0, 0, 0.6)
         pygame.display.flip()
-        FPSCLOCK.tick(FPS)
+        f_p_s_clock.tick(f_p_s)
 
 if __name__ == '__main__':
     main()
